@@ -35,6 +35,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/uploads", express.static(uploadDir));
 
+app.use(
+  "/api/acoes-corretivas",
+  acoesCorretivasRoutes
+);
 /* =========================================================
    UPLOAD
 ========================================================= */
@@ -1103,3 +1107,4 @@ app.listen(PORT, () => {
     `Atlas Gestão API rodando em http://localhost:${PORT}`
   );
 });
+import acoesCorretivasRoutes from "./routes/acoesCorretivasRoutes";
