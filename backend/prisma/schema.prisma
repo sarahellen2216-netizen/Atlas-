@@ -1,0 +1,282 @@
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Perfil {
+  ADMINISTRADOR
+  SUPERVISOR
+  INSPETOR
+  AUDITOR
+  VISUALIZADOR
+}
+
+enum StatusUsuario {
+  ATIVO
+  INATIVO
+}
+
+enum ResultadoInspecao {
+  CONFORME
+  NAO_CONFORME
+}
+
+enum Gravidade {
+  BAIXA
+  MEDIA
+  ALTA
+  CRITICA
+}
+
+enum StatusNaoConformidade {
+  ABERTA
+  EM_ANALISE
+  EM_ANDAMENTO
+  RESOLVIDA
+  FECHADA
+}
+
+enum StatusAcaoCorretiva {
+  ABERTA
+  EM_ANDAMENTO
+  CONCLUIDA
+  ATRASADA
+}
+
+enum ResultadoAuditoria {
+  CONFORME
+  PARCIALMENTE_CONFORME
+  NAO_CONFORME
+}
+
+enum TipoDocumento {
+  POP
+  INSTRUCAO_TRABALHO
+  PROCEDIMENTO
+  FORMULARIO
+  MANUAL
+}
+
+model Usuario {
+  id        String        @id @default(uuid())
+  nome      String
+  email     String        @unique
+  senha     String
+  perfil    Perfil
+  status    StatusUsuario @default(ATIVO)
+  criadoEm  DateTime      @default(now())
+  atualizadoEm DateTime   @updatedAt
+
+  inspecoesResponsavel Inspecao[]
+    @relation("ResponsavelInspecao")
+
+  naoConformidadesResponsavel NaoConformidade[]
+    @relation("ResponsavelNaoConformidade")
+
+  acoesResponsavel AcaoCorretiva[]
+    @relation("ResponsavelAcao")
+
+  auditorias Auditoria[]
+    @relation("AuditorAuditoria")
+
+  documentos Documento[]
+    @relation("ResponsavelDocumento")
+}
+
+model Inspecao {
+  id              String            @id @default(uuid())
+  codigo          String            @unique
+  produto         String
+  lote            String
+  responsavelId   String
+  data            DateTime
+  local           String?
+  tipo            String
+  resultado       ResultadoInspecao
+  observacoes     String?
+  descricaoNC     String?
+  evidencia       String?
+  fotos           String?
+  gravidade       Gravidade?
+  prazoNC         DateTime?
+
+  criadoEm        DateTime          @default(now())
+  atualizadoEm    DateTime          @updatedAt
+
+  responsavel Usuario
+    @relation(
+      "ResponsavelInspecao",
+      fields: [responsavelId],
+      references: [id]
+    )
+
+  naoConformidade NaoConformidade?
+}
+
+model NaoConformidade {
+  id             String                @id @default(uuid())
+  codigo         String                @unique
+  inspecaoId     String?               @unique
+  produto        String?
+  processo       String?
+  descricao      String
+  categoria      String?
+  gravidade      Gravidade
+  responsavelId  String
+  evidencias     String?
+  data           DateTime              @default(now())
+  status         StatusNaoConformidade @default(ABERTA)
+
+  criadoEm       DateTime              @default(now())
+  atualizadoEm   DateTime              @updatedAt
+
+  inspecao Inspecao?
+    @relation(
+      fields: [inspecaoId],
+      references: [id]
+    )
+
+  responsavel Usuario
+    @relation(
+      "ResponsavelNaoConformidade",
+      fields: [responsavelId],
+      references: [id]
+    )
+
+  acoes AcaoCorretiva[]
+}
+
+model AcaoCorretiva {
+  id                  String             @id @default(uuid())
+  numero              String             @unique
+  naoConformidadeId   String
+  responsavelId       String
+  dataAbertura        DateTime           @default(now())
+  prazo               DateTime
+  planoAcao           String
+  status              StatusAcaoCorretiva @default(ABERTA)
+
+  dataConclusao       DateTime?
+  observacoes         String?
+
+  criadoEm            DateTime           @default(now())
+  atualizadoEm        DateTime           @updatedAt
+
+  naoConformidade NaoConformidade
+    @relation(
+      fields: [naoConformidadeId],
+      references: [id],
+      onDelete: Cascade
+    )
+
+  responsavel Usuario
+    @relation(
+      "ResponsavelAcao",
+      fields: [responsavelId],
+      references: [id]
+    )
+}
+
+model Auditoria {
+  id          String             @id @default(uuid())
+  codigo      String             @unique
+  auditorId   String
+  setor       String
+  data        DateTime
+  tipo        String
+  checklist   String?
+  resultado   ResultadoAuditoria
+  observacoes String?
+
+  criadoEm    DateTime           @default(now())
+  atualizadoEm DateTime           @updatedAt
+
+  auditor Usuario
+    @relation(
+      "AuditorAuditoria",
+      fields: [auditorId],
+      references: [id]
+    )
+}
+
+model Documento {
+  id             String       @id @default(uuid())
+  codigo         String       @unique
+  nome           String
+  tipo           TipoDocumento
+  revisao        String
+  data           DateTime
+  responsavelId  String
+  arquivo        String
+
+  ativo          Boolean      @default(true)
+
+  criadoEm       DateTime     @default(now())
+  atualizadoEm   DateTime     @updatedAt
+
+  responsavel Usuario
+    @relation(
+      "ResponsavelDocumento",
+      fields: [responsavelId],
+      references: [id]
+    )
+
+  revisoes RevisaoDocumento[]
+}
+
+model RevisaoDocumento {
+  id           String   @id @default(uuid())
+  documentoId  String
+  revisao      String
+  data         DateTime @default(now())
+  responsavelId String
+  arquivo      String?
+  observacoes  String?
+
+  documento Documento
+    @relation(
+      fields: [documentoId],
+      references: [id],
+      onDelete: Cascade
+    )
+}
+
+model ConfiguracaoEmpresa {
+  id              String   @id @default(uuid())
+  razaoSocial     String?
+  nomeFantasia    String?
+  cnpj            String?
+  endereco        String?
+  telefone        String?
+  email           String?
+  site            String?
+  logo            String?
+
+  criadoEm        DateTime @default(now())
+  atualizadoEm    DateTime @updatedAt
+}
+
+model Notificacao {
+  id          String   @id @default(uuid())
+  titulo      String
+  mensagem    String
+  tipo        String
+  lida        Boolean  @default(false)
+  usuarioId   String?
+  referencia  String?
+  criadoEm    DateTime @default(now())
+}
+
+model BackupRegistro {
+  id          String   @id @default(uuid())
+  nomeArquivo String
+  caminho     String
+  tamanho     Int?
+  criadoEm    DateTime @default(now())
+}
+```
