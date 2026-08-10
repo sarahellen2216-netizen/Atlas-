@@ -1,0 +1,33 @@
+```yaml
+services:
+  postgres:
+    image: postgres:16
+
+    container_name: atlas-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: atlas
+      POSTGRES_PASSWORD: atlas123
+      POSTGRES_DB: atlas_gestao
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - atlas_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U atlas -d atlas_gestao"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  atlas_postgres_data:
+```
