@@ -134,6 +134,21 @@ model NaoConformidade {
 
   criadoEm       DateTime              @default(now())
   atualizadoEm   DateTime              @updatedAt
+model NaoConformidade {
+  id                   Int              @id @default(autoincrement())
+  codigo               String           @unique
+  descricao            String
+  gravidade            String
+  responsavel          String
+  status               String
+  data                 DateTime
+  produto              String?
+  processo             String?
+  categoria            String?
+  evidencias           String?
+
+  acoesCorretivas      AcaoCorretiva[]
+}
 
   inspecao Inspecao?
     @relation(
@@ -166,6 +181,36 @@ model AcaoCorretiva {
 
   criadoEm            DateTime           @default(now())
   atualizadoEm        DateTime           @updatedAt
+model AcaoCorretiva {
+  id                    Int              @id @default(autoincrement())
+  numero                String           @unique
+
+  nao_conformidade_id   Int?
+
+  responsavel           String
+  data_abertura         DateTime
+  prazo                 DateTime
+  plano_acao            String
+
+  status                String           @default("ABERTA")
+
+  observacoes           String?
+
+  percentual            Int              @default(0)
+
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  naoConformidade       NaoConformidade? @relation(
+    fields: [nao_conformidade_id],
+    references: [id],
+    onDelete: SetNull
+  )
+
+  @@index([status])
+  @@index([prazo])
+  @@index([nao_conformidade_id])
+}
 
   naoConformidade NaoConformidade
     @relation(
