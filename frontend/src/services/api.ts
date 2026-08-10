@@ -433,3 +433,48 @@ export async function baixarRelatorio(
 
 export default api;
 ```
+export async function getAcoesCorretivas() {
+  const response = await api.get("/acoes-corretivas");
+  return response.data;
+}
+
+export async function getAcaoCorretiva(id: number) {
+  const response = await api.get(
+    `/acoes-corretivas/${id}`
+  );
+
+  return response.data;
+}
+
+export async function createAcaoCorretiva(
+  data: any
+) {
+  const response = await api.post(
+    "/acoes-corretivas",
+    data
+  );
+
+  return response.data;
+}
+
+export async function updateAcaoCorretiva(
+  id: number,
+  data: any
+) {
+  const response = await api.put(
+    `/acoes-corretivas/${id}`,
+    data
+  );
+
+  return response.data;
+}
+
+export async function deleteAcaoCorretiva(
+  id: number
+) {
+  const response = await api.delete(
+    `/acoes-corretivas/${id}`
+  );
+
+  return response.data;
+}
