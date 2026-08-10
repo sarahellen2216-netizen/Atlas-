@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Atlas Gestão — Qualidade</title>
+  <meta name="description" content="Atlas Gestão - Sistema de Garantia da Qualidade" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="#">Atlas Gestão</a>
+      <button id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">☰</button>
+      <nav id="nav" class="site-nav" hidden>
+        <ul>
+          <li><a href="#home">Início</a></li>
+          <li><a href="#about">Sobre</a></li>
+          <li><a href="#contact">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero container">
+      <h1>Atlas Gestão</h1>
+      <p>Gestão Inteligente da Qualidade para Empresas Modernas</p>
+    </section>
+
+    <section id="about" class="container">
+      <h2>Sobre</h2>
+      <p>Controle inspeções, auditorias, não conformidades e ações corretivas em uma única plataforma.</p>
+    </section>
+
+    <section id="contact" class="container">
+      <h2>Contato</h2>
+      <form id="contactForm" novalidate>
+        <label for="name">Nome</label>
+        <input id="name" name="name" required />
+
+        <label for="email">E‑mail</label>
+        <input id="email" name="email" type="email" required />
+
+        <label for="message">Mensagem</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+
+        <button type="submit">Enviar</button>
+        <p id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Atlas Gestão</p>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
